@@ -23,6 +23,8 @@ class m211211_135819_phonesTable extends Migration
             'user_id' => Schema::TYPE_INTEGER . ' NOT NULL',
             'phone' => Schema::TYPE_STRING . ' NOT NULL',
         ], $tableOptions);
+
+//        $this->addForeignKey('user_id','{{%phones}}', 'user_id', '{{%users}}', 'id');
     }
 
     /**
