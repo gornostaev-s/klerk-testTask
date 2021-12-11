@@ -19,7 +19,7 @@ class m211211_135757_usersTable extends Migration
         }
 
         $this->createTable('{{%users}}',[
-            'id' => Schema::TYPE_PK,
+            'id' => $this->primaryKey(),
             'name' => Schema::TYPE_STRING . ' NOT NULL',
             'surname' => Schema::TYPE_STRING . ' NOT NULL',
             'patronymic' => Schema::TYPE_STRING . ' NOT NULL',
@@ -33,8 +33,6 @@ class m211211_135757_usersTable extends Migration
     public function safeDown()
     {
         $this->dropTable('{{%users}}');
-
-        return false;
     }
 
     /*
