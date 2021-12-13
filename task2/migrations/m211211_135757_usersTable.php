@@ -26,8 +26,6 @@ class m211211_135757_usersTable extends Migration
             'updated_by' => Schema::TYPE_DATETIME . ' NOT NULL',
         ], $tableOptions);
 
-        $this->addForeignKey('FK_phones_delete','{{%users}}', 'id', '{{%phones}}', 'id','SET NULL','CASCADE');
-
     }
 
     /**
