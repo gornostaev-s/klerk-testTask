@@ -23,7 +23,7 @@ class m211211_135757_usersTable extends Migration
             'name' => Schema::TYPE_STRING . ' NOT NULL',
             'surname' => Schema::TYPE_STRING . ' NOT NULL',
             'patronymic' => Schema::TYPE_STRING . ' NOT NULL',
-            'updated_by' => Schema::TYPE_DATETIME . ' NOT NULL',
+            'updated_by' => Schema::TYPE_DATETIME . ' NOT NULL DEFAULT NOW()',
         ], $tableOptions);
 
     }
@@ -35,19 +35,4 @@ class m211211_135757_usersTable extends Migration
     {
         $this->dropTable('{{%users}}');
     }
-
-    /*
-    // Use up()/down() to run migration code without a transaction.
-    public function up()
-    {
-
-    }
-
-    public function down()
-    {
-        echo "m211211_135757_usersTable cannot be reverted.\n";
-
-        return false;
-    }
-    */
 }
