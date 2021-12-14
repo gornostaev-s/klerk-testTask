@@ -19,7 +19,7 @@ class UserStorage implements StorageInterface
 
     public function load()
     {
-        return [];
+        return $this->connection->createCommand('SELECT '.self::USERS_TABLE.'.id, '.self::USERS_TABLE.'.name, '.self::USERS_TABLE.'.surname, '.self::USERS_TABLE.'.patronymic, '.self::USERS_TABLE.'.updated_by, '.self::PHONES_TABLE.'.phone FROM ' . self::USERS_TABLE . ' RIGHT JOIN ' . self::PHONES_TABLE . ' ON ' . self::USERS_TABLE . '.id = ' . self::PHONES_TABLE . '.user_id')->queryAll();
     }
 
     public function save(array $item)
@@ -66,5 +66,10 @@ class UserStorage implements StorageInterface
                 ->createCommand()
                 ->insert(self::PHONES_TABLE, $data);
         }
+    }
+
+    protected function getUserPhones($userId)
+    {
+
     }
 }

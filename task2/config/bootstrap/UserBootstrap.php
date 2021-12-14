@@ -14,14 +14,13 @@ class UserBootstrap implements BootstrapInterface {
 
     public function bootstrap($app){
 
-
         $container = \Yii::$container;
 
-        $container->set('\app\storages\StorageInterface', function() {
+        $container->setSingleton('app\services\UserService');
+
+        $container->set('app\storages\StorageInterface', function() {
             return new UserStorage(Yii::$app->db);
         });
-
-        $container->setSingleton(UserService::class);
 
 //        echo  '<pre>'; var_dump($container->get('\app\services\UserService')); die;
 

@@ -14,8 +14,6 @@ class UserController extends Controller
 
     public function __construct($id, $module, UserService $service, $config = [])
     {
-        echo '<pre>';
-        var_dump($service); die;
         $this->service = $service;
         parent::__construct($id, $module, $config);
     }
@@ -36,6 +34,9 @@ class UserController extends Controller
 
     public function actionIndex()
     {
+        echo '<pre>';
+        var_dump(123, $this->service->getUsers());
+        die;
         return [];
     }
 

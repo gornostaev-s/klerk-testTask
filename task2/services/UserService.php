@@ -1,7 +1,7 @@
 <?php
 namespace app\services;
 
-use app\storage\StorageInterface;
+use app\storages\StorageInterface;
 
 class UserService
 {
@@ -11,7 +11,6 @@ class UserService
 
     public function __construct(StorageInterface $storage)
     {
-        echo 123; die;
         $this->storage = $storage;
     }
 
