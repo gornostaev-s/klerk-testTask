@@ -1,11 +1,14 @@
 <?php
+namespace app\storages;
 
-use \app\storage\StorageInterface;
+use \app\storages\StorageInterface;
 use \yii\db\Connection;
 
 class UserStorage implements StorageInterface
 {
-    const TABLE_NAME = 'users';
+    const USERS_TABLE = 'users';
+    const PHONES_TABLE = 'phones';
+
 
     private $connection;
 
@@ -19,14 +22,24 @@ class UserStorage implements StorageInterface
         return [];
     }
 
-    public function save(array $items)
+    public function save(array $item)
     {
-        $id = $this
+
+        $phones = $item['phones'];
+        unset($item['phones']);
+
+         $this
             ->connection
             ->createCommand()
-            ->insert(self::TABLE_NAME, $items);
+            ->insert(self::USERS_TABLE, $item);
 
-        return $id;
+        $id = $this
+            ->connection
+            ->lastInsertID;
+
+        $this
+            ->savePhones($id, $phones);
+
     }
 
     public function delete($id)
@@ -37,5 +50,21 @@ class UserStorage implements StorageInterface
     public function update($id, array $items)
     {
         return $id;
+    }
+
+    protected function savePhones($userId, array $phones)
+    {
+        foreach ($phones as $phone){
+
+            $data = [
+                'user_id' => $userId,
+                'phone' => $phone
+            ];
+
+            $this
+                ->connection
+                ->createCommand()
+                ->insert(self::PHONES_TABLE, $data);
+        }
     }
 }
