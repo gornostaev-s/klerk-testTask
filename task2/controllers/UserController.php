@@ -3,21 +3,14 @@
 namespace app\controllers;
 
 use app\models\User;
+use app\models\Phone;
+use yii\db\Exception;
 use yii\rest\Controller;
-use yii\validators\Validator;
-use \app\services\UserService;
+use app\resources\UserResource;
 use Yii;
 
 class UserController extends Controller
 {
-    private $service;
-
-    public function __construct($id, $module, UserService $service, $config = [])
-    {
-        $this->service = $service;
-        parent::__construct($id, $module, $config);
-    }
-
     public function behaviors()
     {
         $behaviors = parent::behaviors();
@@ -34,26 +27,138 @@ class UserController extends Controller
 
     public function actionIndex()
     {
-        echo '<pre>';
-        var_dump(123, $this->service->getUsers());
-        die;
-        return [];
+        return UserResource::find()->all();
+    }
+
+    public function actionView($id)
+    {
+        return UserResource::findOne(['id' => $id]);
+    }
+
+    public function actionUpdate($id)
+    {
+        $data = Yii::$app->request->post();
+        $phones = !empty($data['phones'])? $data['phones'] : [];
+        $user = User::findOne(['id' => $id]);
+        $user->load($data,'');
+        $userId = $user->id;
+
+        $error = [
+            'success' => false,
+            'message' => 'Полученные данные некорректны'
+        ];
+
+        if($user->load($data,'') && $user->validate()){
+            $err = [];
+            foreach ($phones as $phone) {
+                $phoneInstance = Phone::findOne(['id' => $phone['id'], 'user_id' => $userId]);
+
+                if(empty($phoneInstance)){
+                    $err[] = "Указанный номер не найден";
+                    continue;
+                }
+
+                if(empty($phone['phone'])){
+                    $phoneInstance->delete();
+                    continue;
+                }
+
+                $phoneInstance->phone = $phone['phone'];
+
+                if($phoneInstance->validate()){
+                    $phoneInstance->save();
+                    continue;
+                }
+
+                $err[] = "В номере телефона {$phone['phone']} содержится ошибка";
+            }
+
+            $user->updated_by = date('Y-m-d H:i:s');
+
+            $user->save();
+
+            return [
+                'success' => true,
+                'data' => [
+                    'id' => $userId
+                ],
+                'messages' => $err
+            ];
+        }
+
+
+        return $error;
     }
 
     public function actionCreate()
     {
-        $user = new User();
-        if ($user->load(Yii::$app->request->post()) && $user->validate()) {
+        $data = Yii::$app->request->post();
 
-            $data = [
-                'name' => $user->name,
-                'surname' => $user->surname,
-                'patronymic' => $user->patronymic,
-                'phones' => $user->phones,
+        $user = new User();
+        $phones = !empty($data['phones'])? $data['phones'] : [];
+        unset($data['phones']);
+
+        $user->load($data, '');
+
+        $error = [
+            'success' => false,
+            'message' => 'Полученные данные некорректны'
+        ];
+
+
+        if($user->validate()){
+            $user->save();
+            $userId = $user->id;
+            $err = [];
+            foreach ($phones as $phone) {
+                $phoneInstance = new Phone();
+
+                if(empty($userId)){
+                    return $error;
+                }
+
+                $phoneInstance->load(['phone' => $phone,'user_id' => $userId],'');
+
+                if($phoneInstance->validate()){
+                    $phoneInstance->save();
+                    continue;
+                }
+
+                $err[] = "В номере телефона $phone содержится ошибка";
+            }
+
+            $res = [
+                'success' => true,
+                'data' => [
+                    'id' => $userId
+                ],
+                'messages' => $err
             ];
 
-            $this->service->createUser($data);
+            return $res;
         }
+
+        return $error;
+
+    }
+
+    public function actionDelete($id)
+    {
+        $user = User::findOne(['id' => $id]);
+        if(!empty($user)){
+            $user->delete();
+
+            return [
+                'success' => true,
+                'data' => [
+                    'id' => $id
+                ],
+            ];
+        }
+        return [
+            'success' => false,
+            'message' => "Пользователь с id: $id не найден"
+        ];
 
     }
 

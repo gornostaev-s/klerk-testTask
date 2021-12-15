@@ -7,8 +7,7 @@ $config = [
     'id' => 'basic',
     'basePath' => dirname(__DIR__),
     'bootstrap' => [
-        'log',
-        'app\config\bootstrap\UserBootstrap'
+        'log'
     ],
     'aliases' => [
         '@bower' => '@vendor/bower-asset',
@@ -51,8 +50,10 @@ $config = [
             'enableStrictParsing' => true,
             'showScriptName' => false,
             'rules' => [
-                'GET /' => 'user/index',
-                'POST /' => 'user/create'
+                [
+                    'class' => 'yii\rest\UrlRule',
+                    'controller' => 'user'
+                ]
             ],
         ],
 

@@ -23,7 +23,7 @@ class m211211_135757_usersTable extends Migration
             'name' => Schema::TYPE_STRING . ' NOT NULL',
             'surname' => Schema::TYPE_STRING . ' NOT NULL',
             'patronymic' => Schema::TYPE_STRING . ' NOT NULL',
-            'updated_by' => Schema::TYPE_DATETIME . ' NOT NULL DEFAULT NOW()',
+            'updated_by' => Schema::TYPE_DATETIME . ' NOT NULL DEFAULT NOW() ON UPDATE NOW()',
         ], $tableOptions);
 
     }

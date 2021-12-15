@@ -3,17 +3,26 @@
 namespace app\models;
 
 use yii\base\Model;
+use yii\db\ActiveRecord;
+use app\resources\PhoneResource;
 
-class User extends Model
+class User extends ActiveRecord
 {
     public static function tableName()
     {
         return '{{%users}}';
     }
 
-    public function rules(){
+    public function getPhones()
+    {
+        return $this->hasMany(PhoneResource::class, ['user_id' => 'id']);
+    }
+
+    public function rules()
+    {
         return [
-            ['phone', 'match', 'pattern' => '\+[0-9] \([0-9]{3}\) [0-9]{3}-[0-9]{2}-[0-9]{2}$', 'message' => 'Неверный формат номера телефона' ],
+            [['name', 'surname','patronymic'], 'required'],
+//            [['name', 'surname','patronymic'], 'string'],
         ];
     }
 }
