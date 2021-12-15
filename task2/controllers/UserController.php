@@ -53,19 +53,19 @@ class UserController extends Controller
             foreach ($phones as $phone) {
                 $phoneInstance = Phone::findOne(['id' => $phone['id'], 'user_id' => $userId]);
 
-                if(empty($phoneInstance)){
-                    $err[] = "Указанный номер не найден";
-                    continue;
-                }
-
-                if(empty($phone['phone'])){
+                if (empty($phone['phone']) && !empty($phoneInstance)){
                     $phoneInstance->delete();
                     continue;
                 }
 
+                if (empty($phoneInstance)){
+                    $phoneInstance = new Phone();
+                    $phoneInstance->load(['user_id' => $userId, 'phone' => $phone]);
+                }
+
                 $phoneInstance->phone = $phone['phone'];
 
-                if($phoneInstance->validate()){
+                if ($phoneInstance->validate()){
                     $phoneInstance->save();
                     continue;
                 }
@@ -106,20 +106,20 @@ class UserController extends Controller
         ];
 
 
-        if($user->validate()){
+        if ($user->validate()){
             $user->save();
             $userId = $user->id;
             $err = [];
             foreach ($phones as $phone) {
                 $phoneInstance = new Phone();
 
-                if(empty($userId)){
+                if (empty($userId)){
                     return $error;
                 }
 
                 $phoneInstance->load(['phone' => $phone,'user_id' => $userId],'');
 
-                if($phoneInstance->validate()){
+                if ($phoneInstance->validate()){
                     $phoneInstance->save();
                     continue;
                 }
@@ -145,7 +145,7 @@ class UserController extends Controller
     public function actionDelete($id)
     {
         $user = User::findOne(['id' => $id]);
-        if(!empty($user)){
+        if (!empty($user)){
             $user->delete();
 
             return [
