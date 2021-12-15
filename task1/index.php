@@ -16,9 +16,6 @@ function balance($left = '', $right = '') :string
         $rightCount += substr_count($right, $char) * $weight;
     }
 
-    echo 'Left: ' . $leftCount . "\n";
-    echo 'Right: ' . $rightCount . "\n";
-
     switch ($leftCount <=> $rightCount){
         case 0:
             $res = 'Balance';
